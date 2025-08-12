@@ -4,8 +4,23 @@ import { CoinContext } from '../context/CoinContext'
 const Home = () => {
 
   const {allCoin, currency} = useContext(CoinContext)
-  console.log(allCoin)
   const [displayCoin, setDisplayCoin] = useState([])
+  const [input, setInput] = useState('')
+
+  const inputHandler = (event) => {
+    setInput(event.target.value)
+    if (event.target.value === '') {
+      setDisplayCoin(allCoin)
+    }
+  }
+
+  const searchHandler = async (event) => {
+    event.preventDefault()
+    const coins = await allCoin.filter((item) => {
+      return item.name.toLowerCase().includes(input.toLowerCase())
+    })
+    setDisplayCoin(coins)
+  }
 
   useEffect(() => {
     setDisplayCoin(allCoin)
@@ -18,8 +33,16 @@ const Home = () => {
         <p className='w-[75%] text-[#e3e3e3] h-[1.5]'>Welcome to the world's largest cryptocurrency
           marketplace.Sign up to explore more about your favorite cryptocurrencies.
         </p>
-        <form className='flex justify-between items-center max-w-md p-2 gap-4 font-semibold bg-white rounded-sm'>
-          <input type = "text" placeholder='Search crypto..' className='flex font-sans border-none outline-none pl-1.5 text-black'></input>
+        <form onSubmit = {searchHandler} className='flex justify-between items-center max-w-md p-2 gap-4 font-semibold bg-white rounded-sm'>
+
+          <input onChange = {inputHandler} value = {input} list = 'coinlist' type = "text" placeholder='Search crypto..' className='flex font-sans border-none outline-none pl-1.5 text-black' required></input>
+          <datalist id='coinlist'>
+            {
+              allCoin.map((item, index) => (<option key = {index} value = {item.name} />))
+            }
+          </datalist>
+
+
           <button type='submit' className='border-none bg-[#7927ff] font-sans px-4 py-0.5 text-white rounded-sm cursor-pointer '>Search</button>
         </form>
       </div>
